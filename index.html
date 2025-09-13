@@ -179,68 +179,102 @@
   </div>
 
   <script>
-    const feedback = document.getElementById('feedback');
+const feedback = document.getElementById('feedback');
 
-    // Helper to write multi-line feedback
-    function showFeedback(title, detail) {
-      feedback.textContent = `${title}\n\n${detail}`;
+// Helper to write multi-line feedback with syntax
+function showFeedback(title, detail, syntax = "") {
+  feedback.textContent = `${title}\n\n${detail}${syntax ? "\n\nSyntax:\n" + syntax : ""}`;
+}
+
+// ---------------- Pseudo-classes ----------------
+
+// :hover
+document.querySelector('.demo-link').addEventListener('mouseover', () => {
+  showFeedback(
+    "You triggered :hover on the link!",
+    "The link changed color because :hover applies a new style when the mouse is over it.\nThis helps create interactive effects without JavaScript.",
+    "a:hover {\n  color: red;\n  text-decoration: none;\n}"
+  );
+});
+document.querySelector('.demo-link').addEventListener('mouseout', () => {
+  showFeedback("Hover ended.", "The mouse moved away, so :hover no longer applies.");
+});
+
+// :active
+document.querySelector('.demo-btn').addEventListener('mousedown', () => {
+  showFeedback(
+    "You triggered :active on the button!",
+    ":active styles appear while the button is being pressed down.\nIt’s often used to give instant feedback to clicks.",
+    "button:active {\n  background-color: orange;\n}"
+  );
+});
+document.querySelector('.demo-btn').addEventListener('mouseup', () => {
+  showFeedback("Button released.", "The :active state ended because the button is no longer pressed.");
+});
+
+// :focus
+document.querySelector('.demo-input').addEventListener('focus', () => {
+  showFeedback(
+    "You triggered :focus on the input!",
+    ":focus highlights elements that are active for typing.\nThis is important for accessibility and keyboard navigation.",
+    "input:focus {\n  border: 2px solid orange;\n  background: lightyellow;\n}"
+  );
+});
+document.querySelector('.demo-input').addEventListener('blur', () => {
+  showFeedback("Input lost focus.", "The :focus style is removed when you click outside the input.");
+});
+
+// nth-child, first-child, last-child
+const listItems = document.querySelectorAll(".demo-list li");
+listItems.forEach((li, index) => {
+  li.addEventListener("mouseenter", () => {
+    li.style.background = "lightgreen"; // highlight
+    if (index === 0) {
+      showFeedback("You hovered on the FIRST CHILD!", "This is styled using :first-child.", "li:first-child { font-weight: bold; }");
+    } else if (index === listItems.length - 1) {
+      showFeedback("You hovered on the LAST CHILD!", "This is styled using :last-child.", "li:last-child { color: blue; }");
+    } else {
+      showFeedback(`You hovered on Child ${index + 1}`, "This can be styled using :nth-child selectors.", "li:nth-child(2) { background: #eee; }");
     }
+  });
 
-    // Pseudo-classes
-    document.querySelector('.demo-link').addEventListener('mouseover', () => {
-      showFeedback("You triggered :hover on the link!",
-        "The link changed color because :hover applies a new style when the mouse is over it.\nThis helps create interactive effects without JavaScript.");
-    });
-    document.querySelector('.demo-link').addEventListener('mouseout', () => {
-      showFeedback("Hover ended.", "The mouse moved away, so :hover no longer applies.");
-    });
+  li.addEventListener("mouseleave", () => {
+    li.style.background = "#f2f2f2";
+    feedback.textContent = "Hover over an item to see feedback...";
+  });
+});
 
-    document.querySelector('.demo-btn').addEventListener('mousedown', () => {
-      showFeedback("You triggered :active on the button!",
-        ":active styles appear while the button is being pressed down.\nIt’s often used to give instant feedback to clicks.");
-    });
-    document.querySelector('.demo-btn').addEventListener('mouseup', () => {
-      showFeedback("Button released.", "The :active state ended because the button is no longer pressed.");
-    });
+// ---------------- Pseudo-elements ----------------
 
-    document.querySelector('.demo-input').addEventListener('focus', () => {
-      showFeedback("You triggered :focus on the input!",
-        ":focus highlights elements that are active for typing.\nThis is important for accessibility and keyboard navigation.");
-    });
-    document.querySelector('.demo-input').addEventListener('blur', () => {
-      showFeedback("Input lost focus.", "The :focus style is removed when you click outside the input.");
-    });
+// ::first-letter & ::first-line
+document.querySelector('.demo-text').addEventListener('click', () => {
+  showFeedback(
+    "This paragraph uses ::first-letter and ::first-line!",
+    "The first letter is styled larger and darker, while the first line is capitalized.\nPseudo-elements let us style parts of text directly.",
+    "p::first-letter {\n  font-size: 2em;\n  color: #333;\n}\n\np::first-line {\n  text-transform: uppercase;\n}"
+  );
+});
 
-     const listItems = document.querySelectorAll(".demo-list li");
-        listItems.forEach((li, index) => {
-      li.addEventListener("mouseenter", () => {
-        li.style.background = "lightgreen"; // highlight on hover
-        feedback.textContent = `You hovered on "${li.textContent}" (Child ${index + 1}).`;
-      });
+// ::before & ::after
+document.querySelector('.decorated').addEventListener('click', () => {
+  showFeedback(
+    "This div is decorated with ::before and ::after!",
+    "Stars (★) were added before and after the content without writing them in HTML.\nThis shows how CSS can add decorative content.",
+    ".decorated::before {\n  content: '★ ';\n  color: gold;\n}\n\n.decorated::after {\n  content: ' ★';\n  color: gold;\n}"
+  );
+});
 
-      li.addEventListener("mouseleave", () => {
-        li.style.background = "#f2f2f2"; // reset color
-        feedback.textContent = "Hover over an item to see feedback...";
-      });
-    });
+// ::selection
+document.addEventListener('selectionchange', () => {
+  if (window.getSelection().toString().length > 0) {
+    showFeedback(
+      "You triggered ::selection!",
+      "When you highlight text, ::selection changes its background and text color.\nIt gives users a nicer experience than the default blue highlight.",
+      "::selection {\n  background: yellow;\n  color: black;\n}"
+    );
+  }
+});
 
-    // Pseudo-elements
-    document.querySelector('.demo-text').addEventListener('click', () => {
-      showFeedback("This paragraph uses ::first-letter and ::first-line!",
-        "The first letter is styled larger and darker, while the first line is automatically capitalized.\nPseudo-elements let us style parts of text directly.");
-    });
-
-    document.querySelector('.decorated').addEventListener('click', () => {
-      showFeedback("This div is decorated with ::before and ::after!",
-        "Stars (★) were added before and after the content without writing them in HTML.\nThis shows how CSS can add decorative content.");
-    });
-
-    document.addEventListener('selectionchange', () => {
-      if (window.getSelection().toString().length > 0) {
-        showFeedback("You triggered ::selection!",
-          "When you highlight text, ::selection changes its background and text color.\nIt gives users a nicer experience than the default blue highlight.");
-      }
-    });
   </script>
 </body>
 </html>
